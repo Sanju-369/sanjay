@@ -1,18 +1,22 @@
 <?php
 session_start(); // Start session to manage login state
 
-// Railway MySQL connection URL
-$connection_url = "mysql://username:password@host:port/database"; // Replace with actual details
+// Fetch Database Connection URL from environment variable
+$connection_url = getenv("DATABASE_URL");
+
+if (!$connection_url) {
+    die("Database connection URL not set.");
+}
 
 // Parse the connection URL
 $parsed_url = parse_url($connection_url);
 $host = $parsed_url["host"];
-$port = $parsed_url["port"];
+$port = $parsed_url["port"] ?? "3306"; // Default MySQL port
 $username = $parsed_url["user"];
 $password = $parsed_url["pass"];
 $dbname = ltrim($parsed_url["path"], "/");
 
-// Connect to the MySQL database
+// Connect to MySQL database using PDO
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
     $conn = new PDO($dsn, $username, $password);
@@ -23,12 +27,13 @@ try {
 
 // Handle AJAX login request
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajax'])) {
-    $sub_id = $_POST['sub_id'] ?? '';
+    $sub_id = trim($_POST['sub_id'] ?? '');
 
     if (!empty($sub_id)) {
-        // Validate sub_id in database
+        // Validate sub_id in the database
         $stmt = $conn->prepare("SELECT * FROM subscriptions WHERE sub_id = :sub_id");
-        $stmt->execute([':sub_id' => $sub_id]);
+        $stmt->bindParam(":sub_id", $sub_id, PDO::PARAM_STR);
+        $stmt->execute();
         $subscription = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($subscription) {
@@ -52,30 +57,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajax'])) {
     <title>Login</title>
     <script>
         function login() {
-            let subId = document.getElementById("sub_id").value;
+            let subId = document.getElementById("sub_id").value.trim();
             let resultMessage = document.getElementById("result-message");
 
-            if (subId.trim() === "") {
+            if (subId === "") {
                 resultMessage.innerHTML = "<p style='color:red;'>Please enter a Subscription ID.</p>";
                 return;
             }
 
             fetch("login.php", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: "ajax=1&sub_id=" + encodeURIComponent(subId)
             })
             .then(response => response.json())
             .then(data => {
+                resultMessage.innerHTML = `<p style="color:${data.status === 'success' ? 'green' : 'red'};">${data.message}</p>`;
                 if (data.status === "success") {
-                    resultMessage.innerHTML = "<p style='color:green;'>" + data.message + "</p>";
-                    setTimeout(() => {
-                        window.location.href = "app.php"; // Redirect to the app
-                    }, 1500);
-                } else {
-                    resultMessage.innerHTML = "<p style='color:red;'>" + data.message + "</p>";
+                    setTimeout(() => window.location.href = "app.php", 1500);
                 }
             })
             .catch(error => {
