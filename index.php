@@ -81,8 +81,8 @@
         <div class="row justify-content-center">
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <h2>Basic Plan 🌱</h2>
-                    <p><b>$2/month</b></p>
+                    <h2>Free Plan 🌱</h2>
+                    <p><b>$0/month</b></p>
                     <div class="plan-list">
                       <p>✅ Only Video Title & Views</p>
                       <p>✅ Fetch Only 1000 Videos</p>
@@ -93,7 +93,7 @@
                       <p>✅ Basic Customer Support</p>
                       <p>✅ Join Our Community</p>
                     </div>
-                    <a href="pay0.php" class="btn btn-dark-golden">Get Basic Plan</a>
+                    <a href="https://basicytresearcher.streamlit.app/" class="btn btn-dark-golden">Free Plan</a>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
@@ -101,7 +101,7 @@
                     <h2>Pro Plan 🚀<br> <span class="discount">40% OFF</span></h2>
                     <p><del>$10</del> <strong>$6/month</strong></p>
                     <ul class="plan-list">
-                        <li><b>Plan with additional perks</b></li>
+
                       <p>✅ Get Also Video Url</p>
                       <p>✅ Fetch 10,000 videos</p>
                       <p>✅ Get Deep Dive In to Topic</p>
@@ -109,9 +109,8 @@
                       <p>✅ Able To Select Any Region</p>
                       <p>✅ AI Agent For Research</p>
                       <p>✅ AI Agent For Transcription</p>
-                      <p>✅ Priority Customer Support</p>
                     </ul>
-                    <a href="pay1.php" class="btn btn-dark-golden">Get Pro Plan</a>
+                    <a href="rks.html" class="btn btn-dark-golden">Get Pro Plan</a>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
@@ -123,7 +122,7 @@
                         <li>24/7 dedicated customer support with instant response time</li>
                         <li>Custom solutions tailored to fit your unique business needs</li>
                     </ul>
-                    <a href="pay2.php" class="btn btn-dark-golden">Get Advance Plan</a>
+                    <a href="rks1.html" class="btn btn-dark-golden">Get Advance Plan</a>
                 </div>
             </div>
         </div>
