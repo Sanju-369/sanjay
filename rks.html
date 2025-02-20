@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout Form</title>
 
-    <!-- PayPal SDK -->
+    <!-- Live PayPal SDK -->
     <script src="https://www.paypal.com/sdk/js?client-id=AdV20eYP_KanJmYzLq9vj6Vo2P9K0ErJyDLupi-72YHedfPD4fJFoWclSQfNB-NsbG8Pc0SXHjrQ_b23&currency=USD"></script>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -30,9 +30,8 @@
             width: 100%;
             margin-top: 15px;
         }
-        #upi-container {
+        #cashfree-container {
             display: none;
-            text-align: center;
             margin-top: 15px;
         }
         #transaction-id {
@@ -50,18 +49,16 @@
         <label>Select Payment Method:</label>
         <select id="payment-method" class="form-control" onchange="togglePaymentOptions()">
             <option value="paypal">PayPal ($6)</option>
-            <option value="upi">UPI (₹499)</option>
+            <option value="cashfree">Cashfree (₹499)</option>
         </select>
-
-        <!-- UPI Payment (QR Code) -->
-        <div id="upi-container">
-            <img src="https://media-hosting.imagekit.io//2081e626f4e74879/r1.jpg?Expires=1834545256&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=RIZvSIRGrir8J4CSa-WWUyHs1lfLpUVvw4rqvgZ75~TAE54gk4tFsjSdRxKHeZrGPk4a3j-yME2pgiWOeGyCPnisx1tK9LNEbiameXcPJ5kp7Cn5R1kBDnAQ-ksfYbfm-ZWc8T~CvTVeleExRrrguaBABLujUEQ6tCXSPPbTUSdmHPLXVZDc5aathXI4IC~CRmqDJ0oqaeTwfBn3kUZd681mXczUbqwntxrNPTK2PpjueS9vNeN-p1FfvHbc-~UXOcE3Nu0ppQ8RXdJB0oMCmzWDr1-IhN9B7o1M5mqFNSdVYMdrVCl6jmQoXX3IBBEkPqCLwtTrndc~KMAg4680NQ__" alt="Scan to Pay" style="width: 200px;">
-            <p>Scan the QR code to pay ₹499 via UPI</p>
-            <button class="btn btn-success" onclick="confirmUPIPayment()">I have Paid</button>
-        </div>
 
         <!-- PayPal Button -->
         <div id="paypal-button-container"></div>
+
+        <!-- Cashfree Button -->
+        <div id="cashfree-container">
+            <button id="pay-button" class="btn btn-primary">Pay with Cashfree</button>
+        </div>
 
         <!-- Transaction ID Display -->
         <p id="transaction-id"></p>
@@ -70,22 +67,14 @@
     <script>
         function togglePaymentOptions() {
             let method = document.getElementById("payment-method").value;
-            document.getElementById("upi-container").style.display = (method === "upi") ? "block" : "none";
             document.getElementById("paypal-button-container").style.display = (method === "paypal") ? "block" : "none";
-        }
-
-        function confirmUPIPayment() {
-            let transactionId = generateTransactionId('UPI');
-            sendTransactionId(transactionId);
-            alert("Payment successful via UPI! Your transaction ID: " + transactionId);
+            document.getElementById("cashfree-container").style.display = (method === "cashfree") ? "block" : "none";
         }
 
         paypal.Buttons({
             createOrder: function(data, actions) {
                 return actions.order.create({
-                    purchase_units: [{
-                        amount: { value: '6.00' }
-                    }]
+                    purchase_units: [{ amount: { value: '6.00' } }]
                 });
             },
             onApprove: function(data, actions) {
@@ -115,6 +104,24 @@
             .then(data => console.log("Transaction ID sent to subscription.php: " + data))
             .catch(error => console.error("Error sending Transaction ID:", error));
         }
+
+        // ✅ Corrected Cashfree Payment Script
+        document.getElementById("pay-button").addEventListener("click", function () {
+            fetch("cashfree.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = data.payment_link;
+                } else {
+                    alert("Failed to initiate Cashfree payment!");
+                    console.error(data);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
     </script>
 </body>
 </html>
