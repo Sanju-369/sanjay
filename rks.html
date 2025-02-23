@@ -63,7 +63,6 @@
         function togglePaymentOptions() {
             let method = document.getElementById("payment-method").value;
             document.getElementById("paypal-button-container").style.display = (method === "paypal") ? "block" : "none";
-            document.getElementById("cashfree-container").style.display = (method === "cashfree") ? "block" : "none";
         }
 
         paypal.Buttons({
@@ -80,14 +79,17 @@
                 });
             }
         }).render('#paypal-button-container');
-
-        function generateTransactionId(method) {
-            let uniqueId = 'TXN-' + Math.floor(Math.random() * 1000000000);
-            document.getElementById("transaction-id").innerHTML = 
-                `Payment successful via ${method}!<br> 
-                <strong>Please do not share your ID:</strong> ${uniqueId}`;
-            return uniqueId;
-        }
+        
+function generateTransactionId(method) {
+    let uniqueId = 'TXN-' + Math.floor(Math.random() * 1000000000);
+    document.getElementById("transaction-id").innerHTML = 
+        `Payment successful via ${method}!<br> 
+        <strong>Please do not share your ID:</strong> ${uniqueId}<br>
+        <strong>Our Team is Verifying Your Transaction.</strong><br>
+        Your Sub_ID will be sent to your transaction Gmail very soon.<br>
+        <strong>Thank you for waiting!</strong>`;
+    return uniqueId;
+}
 
         function sendTransactionId(transactionId) {
             fetch("subscription.php", {
@@ -99,24 +101,6 @@
             .then(data => console.log("Transaction ID sent to subscription.php: " + data))
             .catch(error => console.error("Error sending Transaction ID:", error));
         }
-
-        // ✅ Corrected Cashfree Payment Script
-        document.getElementById("pay-button").addEventListener("click", function () {
-            fetch("cashfree.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    window.location.href = data.payment_link;
-                } else {
-                    alert("Failed to initiate Cashfree payment!");
-                    console.error(data);
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
     </script>
 </body>
 </html>
